@@ -1,0 +1,137 @@
+import pyttsx3
+import speech_recognition as sr
+import datetime
+import pyjokes
+import wikipedia
+import os
+import subprocess
+import webbrowser
+
+
+engine = pyttsx3.init("sapi5")
+voices = engine.getProperty('voices')
+engine.setProperty('voice', voices[2].id)
+
+def Speak(audio):
+    engine.say(audio)
+    engine.runAndWait()
+
+Speak("I am your Assistant")
+assname = ("Alexa")
+Speak(assname)
+
+def Greet():
+    hour = int(datetime.datetime.now().hour)
+    if hour >= 4 and hour <= 12:
+        Speak("Gud Morning sir...")
+    elif hour >= 12 and hour <= 16:
+        Speak("Gud Afternoon, sir...")
+    elif hour >= 16 and hour <= 20:
+        Speak("Gud evening sir...")
+    elif hour >= 20 and hour <= 22:
+        Speak("Hello....")
+    else:
+        Speak("it's , too night,sir ....you should sleep now")
+
+
+def TakeCammand():
+    r = sr.Recognizer()
+    with sr.Microphone() as source:
+        print("Listening...")
+        r.pause_threshold = 0.5
+        audio = r.listen(source)
+    try:
+        print("Recognizing.....")
+        query = r.recognize_google(audio, language="en-in")
+        print(f'==>> {query}')
+    except Exception as e:
+        # print(e)
+        print("unable to recognized, try again...")
+        return "None"
+    return query
+
+if __name__ == "__main__":
+    Greet()
+    Speak(" How can i help you...")
+    while True:
+        query = TakeCammand().lower()
+
+        if 'wikipedia' in query:
+            Speak("Please wait, i am searching on wikipedia")
+            query = query.replace("wikipedia", "")
+            result = wikipedia.summary(query, sentences=2)
+            Speak("according to wikipedia...")
+            print(result)
+            Speak(result)
+        elif'search on google' in query:
+            Speak("what you want to search on google")
+            # print('listening')
+            text=TakeCammand().lower()
+            Speak('wait...')
+            webbrowser.open(f'{text}\\google.com')
+        elif 'play music' in query:
+            Speak('which song you want to listen...')
+            song=TakeCammand()
+            Speak(f"Wait, i am playing  {song} for you...")
+            webbrowser.open(f'{song}//youtube.com')
+            # webbrowser.open('https://www.youtube.com/watch?v=TCN_5iVnr2U')   #for system player
+            # music_dir=r"C:\Users\WIN\Desktop\music"
+            # songs=os.listdir(music_dir)
+            # print(songs)
+            # random=os.startfile(os.path.join(music_dir,songs[1]))
+        elif 'play movie' in query:
+            Speak('which movie you want to see...')
+            movie = TakeCammand()
+            Speak(f"Wait, i am playing  {movie} for you...")
+            webbrowser.open(f'{movie}//youtube.com')
+        elif 'open youtube' in query:
+            Speak("Wait....")
+            webbrowser.open('youtube.com')
+        elif 'open google' in query:
+            Speak("Ok sir....")
+            webbrowser.open('google.com')
+        elif 'open vs code' in query:
+            Speak('opening vs code..')
+            codepath=r'E:\python tutorial\Microsoft VS Code\Code.exe'
+            os.startfile(codepath)
+        elif 'what is the time' in query:
+            Time = datetime.datetime.now().strftime('%H:%M:%S')
+            Speak(f"Sir, the time is {Time}")
+        elif 'the date' in query:
+            Today_date = datetime.datetime.now().date()
+            Speak(f"Sir, the date is {Today_date}")
+        elif "what is your name" in query or 'who are you' in query:
+            Speak(f" i am your virtual assistent, {assname}")
+            print(f'i am {assname}')
+        elif 'how are you' in query:
+            Speak("I am fine, Thank you")
+            Speak("How are you, Sir")
+        elif 'fine' in query or "good" in query:
+            Speak("It's nice to know that you are fine")
+        elif "change your name" in query:
+            Speak("What you want to call me, Sir ")
+            assname = TakeCammand()
+            Speak("Thanks for giving name to me..")
+        elif "who made you" in query or "who created you" in query:
+            Speak("I have been created by Mr johny kumar, who is a student of MCA"
+                  " in CCS University,Meerut Uttar Pradesh")
+        elif 'joke' in query:
+            # Speak(pyjokes.get_joke())
+            print(pyjokes.get_joke())
+        elif 'search' in query:
+            Speak('searching,please wait...')
+            query = query.replace("search", "")
+            webbrowser.open(query)
+        # elif 'shutdown system' in query:
+        #     Speak("are you sure to shut down your system")
+        #     Speak('say yes, if you are....else say,no')
+        #     query=TakeCammand().lower()
+        #     if 'yes' in query:
+        #         Speak("Wait , your system is shutting down")
+        #         subprocess.call('shutdown / p /f')
+        elif " map" in query:
+            webbrowser.open("https://www.google.com/maps/@20.9880135,82.7525294,5z")
+
+        elif 'exit'  in query:
+            Speak("thanks for your time...see you later")
+            exit()
